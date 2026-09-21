@@ -65,7 +65,7 @@ the fine-tuned ResNet18 number, and a single test-set score for the selected mod
 
 ```
 src/         training, evaluation and data-loading code
-tests/       pytest suite
+tests/       pytest suite (environment smoke tests so far)
 notebooks/   exploratory work
 figures/     committed figures, including the confusion matrix
 data/        EuroSAT download (gitignored)
@@ -79,8 +79,10 @@ python -m venv .venv
 pip install -r requirements.txt
 ```
 
-`requirements.txt` pins the CUDA-enabled `torch` build from PyPI. For a CPU-only
-machine, install torch first from the CPU index:
+On Linux, the default PyPI `torch` wheel is the CUDA build and pulls several
+gigabytes of NVIDIA runtime packages with it. On Windows the default is already
+CPU-only. To force CPU wheels on any platform, install torch first from the
+PyTorch CPU index:
 
 ```bash
 pip install torch==2.14.0 torchvision==0.29.0 --index-url https://download.pytorch.org/whl/cpu
