@@ -1,0 +1,20 @@
+# Working plan - local only, not part of the public repo
+PLAN.md
+
+# EuroSAT download and derived arrays
+data/
+*.zip
+*.npy
+*.pt
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.ipynb_checkpoints/
+.env
+
+# OS
+Thumbs.db
+desktop.ini
