@@ -1,0 +1,5 @@
+{
+  "majority_class": "AnnualCrop",
+  "val_accuracy": 0.1111111111111111,
+  "test_accuracy": 0.1111111111111111
+}
