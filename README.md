@@ -12,8 +12,8 @@ estimate economic activity from satellite views of parking lots, storage tanks a
 construction sites. This project is the computer vision half of that pipeline: given a
 patch of ground, name what is on it, and be specific about where that fails.
 
-**Status:** the baseline is recorded. The models and the single test score come next,
-and the test split gets scored exactly once.
+**Status:** the baseline and the from scratch CNN are done. The pretrained ResNet18 and
+the single test score come next, and the test split gets scored exactly once.
 
 ## Questions
 
@@ -29,11 +29,45 @@ and the test split gets scored exactly once.
 | Model | Val accuracy | Test accuracy |
 |---|---|---|
 | Majority class (AnnualCrop) | 11.11% | 11.11% |
+| Small CNN from scratch | 89.06% | not scored |
 
 **Majority class baseline: 11.11%.** Recorded before any model was trained. Six classes
 tie for largest, with 2,100 training images each, so "the majority class" is really a
 six way tie. The code takes the first one, AnnualCrop. Any of the six gives the same
 11.11%, because the stratified split puts exactly 450 of each into val and into test.
+
+**Small CNN from scratch: 89.06% on validation.** Three conv blocks (32, 64, 128
+channels, each conv, batch norm, ReLU, max pool), global average pooling, dropout 0.3 and
+a linear layer. 94,986 parameters. Adam at 1e-3, batch 128, random horizontal and
+vertical flips, 15 epochs, about 4 minutes on a laptop CPU. Seeded, and a second run reproduced every
+epoch's val accuracy exactly on the same machine. Inputs are normalized with channel
+means and standard deviations from the train split only.
+
+Two things keep that number honest:
+
+- It is the best of 15 epochs, and the epoch was picked on the same val split it is
+  reported on, so it leans optimistic. The last epoch scored 88.22%.
+- Validation accuracy is noisy from epoch to epoch. Over the last five epochs it went
+  87.19%, 85.14%, 89.06%, 82.67%, 88.22%. A gap of two or three points between two
+  models on this split is not, by itself, evidence that one is better.
+
+Per class validation accuracy at the chosen epoch:
+
+| Class | Val accuracy |
+|---|---|
+| Forest | 98.89% |
+| Residential | 98.00% |
+| Pasture | 94.67% |
+| PermanentCrop | 94.13% |
+| Industrial | 93.33% |
+| Highway | 87.73% |
+| AnnualCrop | 85.56% |
+| SeaLake | 84.00% |
+| HerbaceousVegetation | 82.44% |
+| River | 72.27% |
+
+River is the weak class by a wide margin. Where those River patches go is a question
+for the confusion matrix, which gets built for whichever model is selected.
 
 ## Data
 
@@ -126,6 +160,7 @@ Then, from the repo root:
 ```bash
 python src/split.py        # downloads EuroSAT, prints class counts, writes the split
 python src/baseline.py     # majority class baseline -> results/baseline.json
+python src/train_scratch.py  # small CNN, val only -> results/small_cnn.json
 python -m pytest
 ```
 

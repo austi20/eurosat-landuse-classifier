@@ -1,6 +1,7 @@
 """Split and baseline tests on synthetic labels, so no download is needed."""
 
 import numpy as np
+import pytest
 
 from baseline import majority_class_accuracy
 from split import load_split, save_split, stratified_split
@@ -57,11 +58,22 @@ def test_split_file_round_trip(tmp_path):
     out = tmp_path / "split.csv"
 
     save_split(out, paths, labels, train, val, test)
-    loaded = load_split(out)
+    loaded = load_split(out, labels)
 
     assert np.array_equal(loaded["train"], train)
     assert np.array_equal(loaded["val"], val)
     assert np.array_equal(loaded["test"], test)
+
+
+def test_load_split_rejects_reordered_dataset(tmp_path):
+    labels = np.array([0, 0, 1, 1])
+    paths = [f"img_{i}.jpg" for i in range(4)]
+    out = tmp_path / "split.csv"
+    save_split(out, paths, labels, np.array([0, 1]), np.array([2]), np.array([3]))
+
+    reordered = np.array([1, 1, 0, 0])
+    with pytest.raises(ValueError):
+        load_split(out, reordered)
 
 
 def test_majority_baseline_uses_train_majority():

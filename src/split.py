@@ -38,11 +38,15 @@ def save_split(path, paths, labels, train, val, test):
             writer.writerow([i, paths[i], int(labels[i]), split_of[i]])
 
 
-def load_split(path):
+def load_split(path, labels):
     parts = {"train": [], "val": [], "test": []}
     with open(path, newline="") as f:
         for row in csv.DictReader(f):
-            parts[row["split"]].append(int(row["index"]))
+            i = int(row["index"])
+            # Catches a dataset listed in a different order
+            if int(row["label"]) != labels[i]:
+                raise ValueError(f"Split file label for index {i} does not match the dataset")
+            parts[row["split"]].append(i)
     return {name: np.array(idx) for name, idx in parts.items()}
 
 

@@ -21,7 +21,11 @@ def class_counts(labels, class_names):
 def load_images(dataset):
     """All images as (N, 3, 64, 64) uint8, in dataset index order."""
     if CACHE_PATH.exists():
-        return np.load(CACHE_PATH)
+        images = np.load(CACHE_PATH)
+        # Partial download would desync images and labels
+        if len(images) != len(dataset):
+            raise ValueError(f"{CACHE_PATH} has {len(images)} images, dataset has {len(dataset)}. Delete it and rerun.")
+        return images
 
     # Decoding 27k JPEGs every epoch is the slow part on CPU
     images = np.zeros((len(dataset), 3, 64, 64), dtype=np.uint8)

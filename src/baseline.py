@@ -20,7 +20,7 @@ def majority_class_accuracy(train_labels, eval_labels):
 def main():
     dataset = load_eurosat()
     labels = np.array(dataset.targets)
-    split = load_split(SPLIT_PATH)
+    split = load_split(SPLIT_PATH, labels)
 
     majority, test_acc = majority_class_accuracy(labels[split["train"]], labels[split["test"]])
     _, val_acc = majority_class_accuracy(labels[split["train"]], labels[split["val"]])
