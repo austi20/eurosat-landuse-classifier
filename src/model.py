@@ -1,6 +1,7 @@
-"""Small CNN trained from scratch: three conv blocks and a linear head."""
+"""Small CNN trained from scratch, and the pretrained ResNet18 it is compared against."""
 
 import torch.nn as nn
+from torchvision.models import ResNet18_Weights, resnet18
 
 
 def conv_block(in_channels, out_channels):
@@ -30,3 +31,11 @@ class SmallCNN(nn.Module):
 
     def forward(self, x):
         return self.head(self.features(x))
+
+
+def build_resnet18(num_classes=10, pretrained=True):
+    weights = ResNet18_Weights.IMAGENET1K_V1 if pretrained else None
+    model = resnet18(weights=weights)
+    # ImageNet's 1000-way head swapped for a fresh 10-way one
+    model.fc = nn.Linear(model.fc.in_features, num_classes)
+    return model
