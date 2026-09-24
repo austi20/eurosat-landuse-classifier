@@ -1,0 +1,196 @@
+{
+  "chosen_model": "resnet18",
+  "val_accuracy": {
+    "small_cnn": 0.890617311000824,
+    "resnet18": 0.9711111187934875
+  },
+  "test_accuracy": 0.9708641975308642,
+  "test_accuracy_95ci": [
+    0.9656842984949766,
+    0.9760440965667517
+  ],
+  "n_test": 4050,
+  "test_accuracy_by_class": {
+    "AnnualCrop": 0.9755555555555555,
+    "Forest": 0.9977777777777778,
+    "HerbaceousVegetation": 0.94,
+    "Highway": 0.984,
+    "Industrial": 0.9866666666666667,
+    "Pasture": 0.9366666666666666,
+    "PermanentCrop": 0.936,
+    "Residential": 0.9888888888888889,
+    "River": 0.9786666666666667,
+    "SeaLake": 0.9733333333333334
+  },
+  "largest_confusions": [
+    {
+      "true": "PermanentCrop",
+      "predicted": "AnnualCrop",
+      "count": 16
+    },
+    {
+      "true": "HerbaceousVegetation",
+      "predicted": "PermanentCrop",
+      "count": 16
+    },
+    {
+      "true": "Pasture",
+      "predicted": "AnnualCrop",
+      "count": 11
+    },
+    {
+      "true": "SeaLake",
+      "predicted": "River",
+      "count": 8
+    },
+    {
+      "true": "HerbaceousVegetation",
+      "predicted": "Forest",
+      "count": 6
+    }
+  ],
+  "pairs_of_interest": {
+    "Highway / River": {
+      "Highway -> River": 2,
+      "River -> Highway": 2
+    },
+    "PermanentCrop / HerbaceousVegetation": {
+      "PermanentCrop -> HerbaceousVegetation": 4,
+      "HerbaceousVegetation -> PermanentCrop": 16
+    }
+  },
+  "class_names": [
+    "AnnualCrop",
+    "Forest",
+    "HerbaceousVegetation",
+    "Highway",
+    "Industrial",
+    "Pasture",
+    "PermanentCrop",
+    "Residential",
+    "River",
+    "SeaLake"
+  ],
+  "confusion_matrix": [
+    [
+      439,
+      0,
+      1,
+      1,
+      0,
+      3,
+      5,
+      0,
+      0,
+      1
+    ],
+    [
+      0,
+      449,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      5,
+      6,
+      423,
+      0,
+      0,
+      0,
+      16,
+      0,
+      0,
+      0
+    ],
+    [
+      1,
+      0,
+      0,
+      369,
+      1,
+      1,
+      0,
+      1,
+      2,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      3,
+      370,
+      0,
+      0,
+      2,
+      0,
+      0
+    ],
+    [
+      11,
+      2,
+      5,
+      0,
+      0,
+      281,
+      1,
+      0,
+      0,
+      0
+    ],
+    [
+      16,
+      0,
+      4,
+      1,
+      1,
+      1,
+      351,
+      0,
+      1,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      1,
+      445,
+      0,
+      0
+    ],
+    [
+      5,
+      0,
+      0,
+      2,
+      0,
+      1,
+      0,
+      0,
+      367,
+      0
+    ],
+    [
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      8,
+      438
+    ]
+  ]
+}
