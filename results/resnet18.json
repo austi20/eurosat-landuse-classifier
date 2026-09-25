@@ -1,43 +1,43 @@
 {
   "best_epoch": 2,
-  "best_val_accuracy": 0.9711111187934875,
-  "final_val_accuracy": 0.9614814519882202,
+  "best_val_accuracy": 0.9743210077285767,
+  "final_val_accuracy": 0.9740740656852722,
   "val_accuracy_by_class": {
-    "AnnualCrop": 0.9933333396911621,
-    "Forest": 0.9977777600288391,
-    "HerbaceousVegetation": 0.9311110973358154,
-    "Highway": 0.9760000109672546,
-    "Industrial": 0.9893333315849304,
-    "Pasture": 0.9399999976158142,
+    "AnnualCrop": 0.9888888597488403,
+    "Forest": 1.0,
+    "HerbaceousVegetation": 0.9333333373069763,
+    "Highway": 0.984000027179718,
+    "Industrial": 0.9946666955947876,
+    "Pasture": 0.9300000071525574,
     "PermanentCrop": 0.9440000057220459,
-    "Residential": 0.9800000190734863,
-    "River": 0.9733333587646484,
-    "SeaLake": 0.9755555391311646
+    "Residential": 0.9911110997200012,
+    "River": 0.9760000109672546,
+    "SeaLake": 0.9866666793823242
   },
   "epochs": 3,
   "batch_size": 64,
   "learning_rate": 0.0001,
   "image_size": 224,
   "seed": 42,
-  "train_minutes": 162.7,
+  "train_minutes": 11.2,
   "history": [
     {
       "epoch": 1,
-      "train_loss": 0.2162738641040035,
-      "train_accuracy": 0.9316931216931217,
-      "val_accuracy": 0.9595061540603638
+      "train_loss": 0.21586926679131846,
+      "train_accuracy": 0.9318518518518518,
+      "val_accuracy": 0.9602469205856323
     },
     {
       "epoch": 2,
-      "train_loss": 0.08611588518061335,
-      "train_accuracy": 0.9718518518518519,
-      "val_accuracy": 0.9711111187934875
+      "train_loss": 0.08519496071945738,
+      "train_accuracy": 0.9711640211640211,
+      "val_accuracy": 0.9743210077285767
     },
     {
       "epoch": 3,
-      "train_loss": 0.062362912169918815,
-      "train_accuracy": 0.9809523809523809,
-      "val_accuracy": 0.9614814519882202
+      "train_loss": 0.061917428391635734,
+      "train_accuracy": 0.9800529100529101,
+      "val_accuracy": 0.9740740656852722
     }
   ]
 }

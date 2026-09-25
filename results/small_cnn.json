@@ -18,7 +18,7 @@
   "batch_size": 128,
   "learning_rate": 0.001,
   "seed": 42,
-  "train_minutes": 3.8,
+  "train_minutes": 3.9,
   "history": [
     {
       "epoch": 1,
