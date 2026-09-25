@@ -12,7 +12,6 @@ __pycache__/
 *.py[cod]
 .venv/
 venv/
-.ipynb_checkpoints/
 .env
 
 # OS
