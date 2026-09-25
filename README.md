@@ -7,14 +7,15 @@ patches across 10 land use classes, in PyTorch. A small CNN trained from scratch
 compared against an ImageNet pretrained ResNet18 fine tuned on the same split, so the
 gap between them measures what transfer learning actually bought.
 
-Overhead imagery is a real alternative data source in quantitative finance. Funds
-estimate economic activity from satellite views of parking lots, storage tanks and
-construction sites. This project is the computer vision half of that pipeline: given a
-patch of ground, name what is on it, and be specific about where that fails.
+Satellite imagery is also used as alternative data in finance, where funds estimate
+economic activity from overhead views of parking lots, storage tanks and construction
+sites. That use starts with the step this project covers: given a patch of ground, name
+what is on it, and say where that goes wrong.
 
-**Headline: 97.09% test accuracy** (95% CI 96.57% to 97.60%, 4,050 test images) for a
-fine tuned ResNet18, against an 11.11% majority class baseline. The test split was
-scored once, after the model had been chosen on validation.
+**What I found:** the fine tuned ResNet18 reaches **97.09% test accuracy** (95% CI
+96.57% to 97.60%, 4,050 test images), against an 11.11% majority class baseline and
+89.06% validation accuracy for the small CNN. The test split was scored once, after the
+model had been chosen on validation.
 
 ## Questions
 
@@ -45,9 +46,9 @@ six way tie. The code takes the first one, AnnualCrop. Any of the six gives the 
 **Small CNN from scratch: 89.06% on validation.** Three conv blocks (32, 64, 128
 channels, each conv, batch norm, ReLU, max pool), global average pooling, dropout 0.3 and
 a linear layer. 94,986 parameters. Adam at 1e-3, batch 128, random horizontal and
-vertical flips, 15 epochs, about 4 minutes on a laptop CPU. Seeded, and a second run reproduced every
-epoch's val accuracy exactly on the same machine. Inputs are normalized with channel
-means and standard deviations from the train split only.
+vertical flips, 15 epochs, about 4 minutes on a laptop CPU. Seeded, and a second run
+reproduced every epoch's val accuracy exactly on the same machine. Inputs are normalized
+with channel means and standard deviations from the train split only.
 
 It is the best of 15 epochs, picked on the same val split it is reported on, so it leans
 optimistic; the last epoch scored 88.22%. Val accuracy also swung by up to six points
@@ -58,8 +59,8 @@ split mean little. The gap to the ResNet is not small.
 replaced with a fresh 10-way linear layer, and every layer fine tuned rather than
 freezing the backbone. Inputs are resized 64 -> 224 with bilinear interpolation and
 normalized with ImageNet statistics, because those are what the pretrained filters
-expect. Adam at 1e-4, batch 64, the same random flips, 3 epochs. About 37 minutes per
-epoch on a laptop CPU (Intel i5-1230U, no GPU).
+expect. Adam at 1e-4, batch 64, the same random flips, 3 epochs. The run took 163
+minutes on a laptop CPU (Intel i5-1230U, no GPU), validation passes included.
 
 | Epoch | Train accuracy | Val accuracy |
 |---|---|---|
@@ -92,9 +93,9 @@ it in the classes the small CNN was worst at:
 | Residential | 98.00% | 98.00% | 98.89% |
 | Forest | 98.89% | 99.78% | 99.78% |
 
-River went from the worst class to a middling one. The three classes the ResNet did not
-improve, PermanentCrop, Pasture and HerbaceousVegetation, are where its remaining errors
-live.
+River went from the worst class to a middling one. PermanentCrop and Pasture barely
+moved, and HerbaceousVegetation gained about ten points but is still the weakest on
+validation. Those three are where the ResNet's remaining errors live.
 
 ### Confusion matrix
 
@@ -115,20 +116,20 @@ Forest. The largest single cells:
 | SeaLake | River | 8 | 1.8% |
 | HerbaceousVegetation | Forest | 6 | 1.3% |
 
-Looking at the misclassified patches, not just the counts:
+Looking at the misclassified test patches by eye, not just the counts:
 
 - **PermanentCrop -> AnnualCrop.** The missed PermanentCrop patches are large rectangular
   parcels with stripes, which is what annual cropland looks like. The PermanentCrop
   patches it gets right tend to be finer grained and mottled, closer to orchards and
-  vineyards. At 10 m per pixel a row of trees and a row of wheat are the same stripe.
+  vineyards. At 10 m per pixel, orchard rows and striped fields can look the same.
 - **HerbaceousVegetation -> PermanentCrop.** The misses are dry, hilly, speckled
   terrain, a light patchwork of scrub and bare soil that looks like the Mediterranean
   PermanentCrop patches.
 - **Pasture -> AnnualCrop.** Correct Pasture patches are mostly uniform green. The
   misses have visible straight field edges, which the model reads as cropland.
 - **SeaLake -> River.** Correct SeaLake patches are almost all open water. The misses
-  contain an edge: a shoreline, a pier, a harbor, a boat. Anything linear inside water
-  pulls the prediction toward River.
+  contain an edge: a shoreline, a pier, a harbor, a boat. Something linear inside water
+  seems to pull the prediction toward River.
 
 **The two pairs I expected to matter mostly did not.** Before training, the plan named
 Highway / River (narrow linear features) and PermanentCrop / HerbaceousVegetation (green
@@ -136,15 +137,11 @@ texture) as the likely confusions. What actually happened:
 
 - **Highway / River: 4 errors out of 750 test images of the two classes.** 2 Highway
   patches were called River and 2 River patches Highway. At this accuracy the pair is
-  essentially solved. River's remaining errors go to AnnualCrop (5), and the water
-  confusion that does exist is SeaLake -> River.
+  essentially solved. 5 of River's 8 errors go to AnnualCrop, and the water confusion
+  that does exist is SeaLake -> River.
 - **PermanentCrop / HerbaceousVegetation: real, but one way.** 16 HerbaceousVegetation
   patches were called PermanentCrop, and only 4 went the other way. PermanentCrop's own
   biggest leak is into AnnualCrop, not HerbaceousVegetation.
-
-For comparison, the EuroSAT paper's ResNet-50 confusion matrix shows about 2% Highway ->
-River and 2% PermanentCrop -> HerbaceousVegetation, so both expected pairs are
-reasonable. This model's errors fall elsewhere.
 
 ### Against the published 98.57%
 
@@ -153,8 +150,8 @@ this model's 95% interval, so the gap is not test set noise. The comparison is n
 for like, though. The paper's 98.57% is a pretrained **ResNet-50** on RGB with an
 **80/20** train/test split (Helber et al., Table III). Here it is a ResNet18 with less
 than half the parameters, trained on 70% of the data rather than 80%, for 3 epochs at a
-constant learning rate on a laptop CPU. Any of those could account for a point and a
-half. This project does not separate them, so which one matters most is untested.
+constant learning rate on a laptop CPU. Any of those could explain part of the gap.
+This project does not separate them, so which one matters most is untested.
 
 ## Data
 
@@ -256,7 +253,7 @@ Then, from the repo root:
 python src/split.py          # downloads EuroSAT, prints class counts, writes the split
 python src/baseline.py       # majority class baseline -> results/baseline.json
 python src/train_scratch.py  # small CNN, val only -> results/small_cnn.json
-python src/train_resnet.py   # ResNet18, val only -> results/resnet18.json (~2 h on CPU)
+python src/train_resnet.py   # ResNet18, val only -> results/resnet18.json (~2.5 h on CPU)
 python src/evaluate.py       # picks on val, scores test once -> results/test.json
 python -m pytest
 ```
@@ -275,9 +272,9 @@ it awake: training stalls while the machine sleeps.
   rows, or a lake shore and a riverbank, are the same few pixels wide, and most of the
   remaining errors are pairs like that.
 - **RGB only.** Sentinel-2 carries 13 spectral bands. The torchvision RGB variant throws
-  away the near infrared and shortwave infrared bands, which separate vegetation types
-  most cleanly. With 65% of the errors between vegetation classes, those bands are the
-  most likely next gain.
+  away the near infrared and shortwave infrared bands, which are commonly used to tell
+  vegetation types apart. With 65% of the errors between vegetation classes, they are
+  worth trying next, but this project did not test them.
 - **One seed, one split, one test score.** The 95% interval (96.57% to 97.60%) covers
   test sampling only, not the variation from retraining with another seed or split.
   The 3 epoch budget was set by CPU time, not tuned.
