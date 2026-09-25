@@ -10,7 +10,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
-from matplotlib.colors import LinearSegmentedColormap, PowerNorm
+from matplotlib.colors import PowerNorm
 from sklearn.metrics import confusion_matrix
 
 import train_resnet
@@ -24,9 +24,6 @@ FIGURE_PATH = Path("figures/confusion_matrix.png")
 
 # Class pairs named in the plan as the likely confusions, checked either way round
 PAIRS_OF_INTEREST = [("Highway", "River"), ("PermanentCrop", "HerbaceousVegetation")]
-
-# Single-hue blue ramp, light to dark
-BLUES = ["#ffffff", "#cde2fb", "#9ec5f4", "#6da7ec", "#3987e5", "#256abf", "#184f95", "#0d366b"]
 
 
 def choose_model(val_accuracies):
@@ -49,10 +46,7 @@ def predict_test(name, images, split, num_classes):
         return train_resnet.predict(model, images[split["test"]])
 
     # Same train-only channel stats the scratch CNN was trained with
-    train_float = images[split["train"]].float() / 255.0
-    mean = train_float.mean(dim=(0, 2, 3)).view(1, 3, 1, 1)
-    std = train_float.std(dim=(0, 2, 3)).view(1, 3, 1, 1)
-    del train_float
+    mean, std = train_scratch.channel_stats(images[split["train"]])
     model = SmallCNN(num_classes=num_classes)
     model.load_state_dict(torch.load(train_scratch.CHECKPOINT_PATH))
     return train_scratch.predict(model, images[split["test"]], mean, std)
@@ -63,8 +57,7 @@ def plot_confusion(cm, class_names, path, model_name):
     share = cm / cm.sum(axis=1, keepdims=True)
     fig, ax = plt.subplots(figsize=(8.5, 7.5))
     # Power scale so a 2-5% error cell is visibly tinted next to a 95% diagonal
-    ax.imshow(share, cmap=LinearSegmentedColormap.from_list("blues", BLUES),
-              norm=PowerNorm(gamma=0.4, vmin=0, vmax=1))
+    ax.imshow(share, cmap="Blues", norm=PowerNorm(gamma=0.4, vmin=0, vmax=1))
 
     for i in range(len(cm)):
         for j in range(len(cm)):
@@ -109,9 +102,8 @@ def main():
     dataset = load_eurosat()
     class_names = dataset.classes
     images = torch.from_numpy(load_images(dataset))
-    labels = torch.tensor(dataset.targets)
     split = load_split(SPLIT_PATH, dataset.targets)
-    test_y = labels[split["test"]].numpy()
+    test_y = np.array(dataset.targets)[split["test"]]
 
     test_preds = predict_test(chosen, images, split, len(class_names)).numpy()
     n = len(test_y)

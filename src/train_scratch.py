@@ -18,6 +18,12 @@ RESULTS_PATH = Path("results/small_cnn.json")
 CHECKPOINT_PATH = Path("models/small_cnn.pt")
 
 
+def channel_stats(train_images):
+    """Per-channel mean and std of the train images, shaped to broadcast over a batch."""
+    x = train_images.float() / 255.0
+    return x.mean(dim=(0, 2, 3)).view(1, 3, 1, 1), x.std(dim=(0, 2, 3)).view(1, 3, 1, 1)
+
+
 def to_float(batch, mean, std):
     return (batch.float() / 255.0 - mean) / std
 
@@ -75,10 +81,7 @@ def main():
     val_x, val_y = images[split["val"]], labels[split["val"]]
 
     # Channel stats from train only, so val leaks nothing
-    train_float = train_x.float() / 255.0
-    mean = train_float.mean(dim=(0, 2, 3)).view(1, 3, 1, 1)
-    std = train_float.std(dim=(0, 2, 3)).view(1, 3, 1, 1)
-    del train_float
+    mean, std = channel_stats(train_x)
 
     model = SmallCNN(num_classes=len(dataset.classes))
     optimizer = torch.optim.Adam(model.parameters(), lr=LEARNING_RATE)

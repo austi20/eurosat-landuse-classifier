@@ -24,7 +24,6 @@ def test_split_is_disjoint_and_complete():
     labels = make_labels()
     train, val, test = stratified_split(labels, seed=42)
     all_idx = np.concatenate([train, val, test])
-    assert len(set(all_idx)) == len(labels)
     assert sorted(all_idx) == list(range(len(labels)))
 
 

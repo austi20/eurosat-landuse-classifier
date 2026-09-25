@@ -22,9 +22,10 @@ def load_images(dataset):
     """All images as (N, 3, 64, 64) uint8, in dataset index order."""
     if CACHE_PATH.exists():
         images = np.load(CACHE_PATH)
-        # Partial download would desync images and labels
+        # A cache left over from a different download would misalign images and labels
         if len(images) != len(dataset):
-            raise ValueError(f"{CACHE_PATH} has {len(images)} images, dataset has {len(dataset)}. Delete it and rerun.")
+            raise ValueError(f"{CACHE_PATH} has {len(images)} images, dataset has {len(dataset)}. "
+                             "Delete it and rerun.")
         return images
 
     # Decoding 27k JPEGs every epoch is the slow part on CPU
