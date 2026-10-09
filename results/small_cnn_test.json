@@ -1,0 +1,21 @@
+{
+  "val_accuracy": 0.8906172839506172,
+  "test_accuracy": 0.8883950617283951,
+  "test_accuracy_95ci": [
+    0.8786972592691941,
+    0.8980928641875962
+  ],
+  "n_test": 4050,
+  "test_accuracy_by_class": {
+    "AnnualCrop": 0.8622222222222222,
+    "Forest": 0.9955555555555555,
+    "HerbaceousVegetation": 0.8066666666666666,
+    "Highway": 0.8746666666666667,
+    "Industrial": 0.9226666666666666,
+    "Pasture": 0.9666666666666667,
+    "PermanentCrop": 0.928,
+    "Residential": 0.9866666666666667,
+    "River": 0.728,
+    "SeaLake": 0.8222222222222222
+  }
+}

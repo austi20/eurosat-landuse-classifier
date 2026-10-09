@@ -14,8 +14,8 @@ what is on it, and say where that goes wrong.
 
 **What I found:** the fine tuned ResNet18 reaches **97.06% test accuracy** (95% CI
 96.54% to 97.58%, 4,050 test images), against an 11.11% majority class baseline and
-89.06% validation accuracy for the small CNN. The model was chosen on validation before
-test was scored. The test split has been scored twice, not once, for reasons explained
+88.84% test accuracy for the small CNN. The ResNet was chosen on validation before
+test was scored. The test split has been looked at more than once, for reasons explained
 [below](#the-test-split-has-been-scored-twice).
 
 ## Questions
@@ -32,19 +32,20 @@ test was scored. The test split has been scored twice, not once, for reasons exp
 | Model | Val accuracy | Test accuracy |
 |---|---|---|
 | Majority class (AnnualCrop) | 11.11% | 11.11% |
-| Small CNN from scratch | 89.06% | not scored |
+| Small CNN from scratch | 89.06% | 88.84% |
 | **ResNet18, ImageNet pretrained, fine tuned** | **97.43%** | **97.06%** |
 | *EuroSAT paper: ResNet-50, RGB, 80/20 split* | | *98.57%* |
 
-The small CNN has no test number on purpose. Only the model chosen on validation gets
-scored on test, and the ResNet won validation by eight points.
+The small CNN was scored on test last, after the ResNet had already been chosen on
+validation by eight points, so its test number played no part in the choice. It is there
+so both models are compared on the same untouched split.
 
 **Majority class baseline: 11.11%.** Recorded before any model was trained. Six classes
 tie for largest, with 2,100 training images each, so "the majority class" is really a
 six way tie. The code takes the first one, AnnualCrop. Any of the six gives the same
 11.11%, because the stratified split puts exactly 450 of each into val and into test.
 
-**Small CNN from scratch: 89.06% on validation.** Three conv blocks (32, 64, 128
+**Small CNN from scratch: 89.06% on validation, 88.84% on test.** Three conv blocks (32, 64, 128
 channels, each conv, batch norm, ReLU, max pool), global average pooling, dropout 0.3 and
 a linear layer. 94,986 parameters. Adam at 1e-3, batch 128, random horizontal and
 vertical flips, 15 epochs. Three timed runs on a desktop CPU (8 core AMD Ryzen 7 9800X3D,
@@ -80,6 +81,10 @@ to help.
 below the validation number. Some of that is likely the optimism from picking the epoch
 on validation, but the gap sits inside the test interval, so it is not clearly more than
 noise.
+
+The small CNN's test score is 88.84% (95% CI 87.87% to 89.81%, 3,598 of 4,050 correct),
+0.22 points below its validation number. On test the ResNet leads by 8.22 points, and the
+two intervals do not overlap.
 
 ### The test split has been scored twice
 
@@ -282,6 +287,7 @@ python src/baseline.py       # majority class baseline -> results/baseline.json
 python src/train_scratch.py  # small CNN, val only -> results/small_cnn.json
 python src/train_resnet.py   # ResNet18, val only -> results/resnet18.json (11 min desktop, 2.7 h laptop)
 python src/evaluate.py       # picks on val, scores test once -> results/test.json
+python src/score_small_cnn.py  # small CNN on test, after the choice -> results/small_cnn_test.json
 python -m pytest
 ```
 
